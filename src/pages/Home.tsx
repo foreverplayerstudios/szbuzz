@@ -216,6 +216,73 @@ const Category: React.FC<CategoryProps> = ({ title, icon: Icon, items, isLoading
   );
 };
 
+// Advertisement script loader component
+const AdScript = () => {
+  React.useEffect(() => {
+    // First, set the global atOptions
+    const atOptionsScript = document.createElement('script');
+    atOptionsScript.type = 'text/javascript';
+    atOptionsScript.text = `
+      window.atOptions = {
+        'key' : 'cfb74f91e14c4ae76186223d9338a5da',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+    document.head.appendChild(atOptionsScript);
+    
+    // Then load the invoke script for each ad container
+    const containers = ['ad-container-1', 'ad-container-2'];
+    containers.forEach((containerId, index) => {
+      const invokeScript = document.createElement('script');
+      invokeScript.type = 'text/javascript';
+      invokeScript.src = '//www.highperformanceformat.com/cfb74f91e14c4ae76186223d9338a5da/invoke.js';
+      invokeScript.async = true;
+      invokeScript.onload = () => {
+        // Create a new invoke for each container
+        const container = document.getElementById(containerId);
+        if (container) {
+          container.innerHTML = ''; // Clear any previous content
+          const adFrame = document.createElement('div');
+          adFrame.id = `ad-frame-${index}`;
+          container.appendChild(adFrame);
+          
+          // Trigger the ad to load in this specific container
+          try {
+            // @ts-ignore - Accessing window property added by the external script
+            if (window.adsbygoogle && typeof window.adsbygoogle.push === 'function') {
+              // @ts-ignore
+              window.adsbygoogle.push({});
+            }
+          } catch (e) {
+            console.error('Error loading ad:', e);
+          }
+        }
+      };
+      document.body.appendChild(invokeScript);
+    });
+
+    // Cleanup function
+    return () => {
+      try {
+        document.head.removeChild(atOptionsScript);
+        const scripts = document.querySelectorAll('script[src*="highperformanceformat.com"]');
+        scripts.forEach(script => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        });
+      } catch (e) {
+        console.error('Error cleaning up ad scripts:', e);
+      }
+    };
+  }, []);
+
+  return null;
+};
+
 export const Home = () => {
   const { data: trendingMovies, isLoading: isTrendingMoviesLoading } = useQuery(
     'trendingMovies', 
@@ -305,7 +372,8 @@ export const Home = () => {
   return (
     <>
       <SEO {...seoProps} />
-
+      <AdScript />
+      
       <main className="min-h-screen bg-[#0f0f0f]">
         <h1 className="sr-only">StreamZone - Watch Movies & TV Shows Online</h1>
         
@@ -317,10 +385,7 @@ export const Home = () => {
 
           {/* Advertisement */}
           <div className="mb-8 flex justify-center">
-            <div id="frame" style={{width:'728px', height:'auto'}}>
-              <iframe data-aa='2393202' src='//ad.a-ads.com/2393202?size=728x90' style={{width:'728px', height:'90px', border:'0px', padding:0, overflow:'hidden', backgroundColor: 'transparent'}}></iframe>
-              <a style={{display: 'block', textAlign: 'right', fontSize: '12px'}} id="preview-link" href="https://aads.com/campaigns/new/?source_id=2393202&source_type=ad_unit&partner=2393202">Advertise here</a>
-            </div>
+            <div id="ad-container-1" style={{width:'728px', height:'90px'}} />
           </div>
 
           {/* Quick Navigation */}
@@ -394,10 +459,7 @@ export const Home = () => {
 
             {/* Advertisement */}
             <div className="my-8 flex justify-center">
-              <div id="frame" style={{width:'728px', height:'auto'}}>
-                <iframe data-aa='2393202' src='//ad.a-ads.com/2393202?size=728x90' style={{width:'728px', height:'90px', border:'0px', padding:0, overflow:'hidden', backgroundColor: 'transparent'}}></iframe>
-                <a style={{display: 'block', textAlign: 'right', fontSize: '12px'}} id="preview-link" href="https://aads.com/campaigns/new/?source_id=2393202&source_type=ad_unit&partner=2393202">Advertise here</a>
-              </div>
+              <div id="ad-container-2" style={{width:'728px', height:'90px'}} />
             </div>
           </div>
         </div>

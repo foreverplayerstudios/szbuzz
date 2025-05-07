@@ -7,6 +7,49 @@ import { SEO } from '../components/SEO';
 import { AvatarSelector, DEFAULT_AVATAR } from '../components/AvatarSelector';
 import toast from 'react-hot-toast';
 
+// Advertisement script loader component
+const AdScript = () => {
+  React.useEffect(() => {
+    // First, set the global atOptions
+    const atOptionsScript = document.createElement('script');
+    atOptionsScript.type = 'text/javascript';
+    atOptionsScript.text = `
+      window.atOptions = {
+        'key' : 'cfb74f91e14c4ae76186223d9338a5da',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+    document.head.appendChild(atOptionsScript);
+    
+    // Then load the invoke script
+    const invokeScript = document.createElement('script');
+    invokeScript.type = 'text/javascript';
+    invokeScript.src = '//www.highperformanceformat.com/cfb74f91e14c4ae76186223d9338a5da/invoke.js';
+    invokeScript.async = true;
+    document.body.appendChild(invokeScript);
+
+    // Cleanup function
+    return () => {
+      try {
+        document.head.removeChild(atOptionsScript);
+        const scripts = document.querySelectorAll('script[src*="highperformanceformat.com"]');
+        scripts.forEach(script => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        });
+      } catch (e) {
+        console.error('Error cleaning up ad scripts:', e);
+      }
+    };
+  }, []);
+
+  return null;
+};
+
 export const Profile = () => {
   const { user, signOut, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -81,6 +124,7 @@ export const Profile = () => {
         title="My Profile - StreamZone"
         description="Manage your StreamZone profile settings and preferences."
       />
+      <AdScript />
 
       <div className="min-h-screen bg-[#0f0f0f] py-12">
         <div className="max-w-3xl mx-auto px-4">
@@ -149,10 +193,7 @@ export const Profile = () => {
 
           {/* Advertisement */}
           <div className="mt-8 flex justify-center">
-            <div id="frame" style={{width:'728px', height:'auto'}}>
-              <iframe data-aa='2393202' src='//ad.a-ads.com/2393202?size=728x90' style={{width:'728px', height:'90px', border:'0px', padding:0, overflow:'hidden', backgroundColor: 'transparent'}}></iframe>
-              <a style={{display: 'block', textAlign: 'right', fontSize: '12px'}} id="preview-link" href="https://aads.com/campaigns/new/?source_id=2393202&source_type=ad_unit&partner=2393202">Advertise here</a>
-            </div>
+            <div id="ad-container-profile" style={{width:'728px', height:'90px'}} />
           </div>
         </div>
       </div>

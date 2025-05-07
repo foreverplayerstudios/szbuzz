@@ -14,6 +14,52 @@ import { supabase } from '../lib/supabase';
 import { GenreBadge } from '../components/GenreBadge';
 import { createSEOProps, formatMovieTitle } from '../utils/seo-helper';
 
+// Advertisement script loader component
+const AdScript = () => {
+  React.useEffect(() => {
+    // First, set the global atOptions
+    const atOptionsScript = document.createElement('script');
+    atOptionsScript.type = 'text/javascript';
+    atOptionsScript.text = `
+      window.atOptions = {
+        'key' : 'cfb74f91e14c4ae76186223d9338a5da',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+    document.head.appendChild(atOptionsScript);
+    
+    // Then load the invoke script for each ad container
+    const containers = ['ad-container-watch-1', 'ad-container-watch-2'];
+    containers.forEach((containerId, index) => {
+      const invokeScript = document.createElement('script');
+      invokeScript.type = 'text/javascript';
+      invokeScript.src = '//www.highperformanceformat.com/cfb74f91e14c4ae76186223d9338a5da/invoke.js';
+      invokeScript.async = true;
+      document.body.appendChild(invokeScript);
+    });
+
+    // Cleanup function
+    return () => {
+      try {
+        document.head.removeChild(atOptionsScript);
+        const scripts = document.querySelectorAll('script[src*="highperformanceformat.com"]');
+        scripts.forEach(script => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        });
+      } catch (e) {
+        console.error('Error cleaning up ad scripts:', e);
+      }
+    };
+  }, []);
+
+  return null;
+};
+
 export const Watch = () => {
   const { mediaType = 'movie', id } = useParams<{ mediaType: 'movie' | 'tv'; id: string }>();
   const { user } = useAuth();
@@ -138,6 +184,7 @@ export const Watch = () => {
   return (
     <>
       <SEO {...seoProps} />
+      <AdScript />
 
       <main className="min-h-screen bg-[#0f0f0f]">
         <div className="relative">
@@ -236,10 +283,7 @@ export const Watch = () => {
 
                 {/* Advertisement */}
                 <div className="mb-8 flex justify-center">
-                  <div id="frame" style={{width:'728px', height:'auto'}}>
-                    <iframe data-aa='2393202' src='//ad.a-ads.com/2393202?size=728x90' style={{width:'728px', height:'90px', border:'0px', padding:0, overflow:'hidden', backgroundColor: 'transparent'}}></iframe>
-                    <a style={{display: 'block', textAlign: 'right', fontSize: '12px'}} id="preview-link" href="https://aads.com/campaigns/new/?source_id=2393202&source_type=ad_unit&partner=2393202">Advertise here</a>
-                  </div>
+                  <div id="ad-container-watch-1" style={{width:'728px', height:'90px'}} />
                 </div>
 
                 {mediaType === 'tv' && details.seasons && (
@@ -335,10 +379,7 @@ export const Watch = () => {
 
                 {/* Advertisement */}
                 <div className="mb-8 flex justify-center">
-                  <div id="frame" style={{width:'728px', height:'auto'}}>
-                    <iframe data-aa='2393202' src='//ad.a-ads.com/2393202?size=728x90' style={{width:'728px', height:'90px', border:'0px', padding:0, overflow:'hidden', backgroundColor: 'transparent'}}></iframe>
-                    <a style={{display: 'block', textAlign: 'right', fontSize: '12px'}} id="preview-link" href="https://aads.com/campaigns/new/?source_id=2393202&source_type=ad_unit&partner=2393202">Advertise here</a>
-                  </div>
+                  <div id="ad-container-watch-2" style={{width:'728px', height:'90px'}} />
                 </div>
 
                 {recommendations && recommendations.length > 0 && (
