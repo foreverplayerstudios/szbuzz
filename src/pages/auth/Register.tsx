@@ -5,48 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { SEO } from '../../components/SEO';
 import toast from 'react-hot-toast';
 
-// Advertisement script loader component
-const AdScript = () => {
-  React.useEffect(() => {
-    // First, set the global atOptions
-    const atOptionsScript = document.createElement('script');
-    atOptionsScript.type = 'text/javascript';
-    atOptionsScript.text = `
-      window.atOptions = {
-        'key' : 'cfb74f91e14c4ae76186223d9338a5da',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    `;
-    document.head.appendChild(atOptionsScript);
-    
-    // Then load the invoke script
-    const invokeScript = document.createElement('script');
-    invokeScript.type = 'text/javascript';
-    invokeScript.src = '//www.highperformanceformat.com/cfb74f91e14c4ae76186223d9338a5da/invoke.js';
-    invokeScript.async = true;
-    document.body.appendChild(invokeScript);
-
-    // Cleanup function
-    return () => {
-      try {
-        document.head.removeChild(atOptionsScript);
-        const scripts = document.querySelectorAll('script[src*="highperformanceformat.com"]');
-        scripts.forEach(script => {
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
-          }
-        });
-      } catch (e) {
-        console.error('Error cleaning up ad scripts:', e);
-      }
-    };
-  }, []);
-
-  return null;
-};
+import { Advertisement } from '../../components/Advertisement';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
@@ -77,7 +36,6 @@ export const Register = () => {
         title="Sign Up - StreamZone"
         description="Create your StreamZone account to start streaming your favorite movies and TV shows."
       />
-      <AdScript />
 
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#0f0f0f]">
         <div className="max-w-md w-full space-y-8">
@@ -161,8 +119,8 @@ export const Register = () => {
           </form>
 
           {/* Advertisement */}
-          <div className="mt-8 flex justify-center">
-            <div id="ad-container-register" style={{width:'728px', height:'90px'}} />
+          <div className="mt-8">
+            <Advertisement className="mt-8" />
           </div>
         </div>
       </div>

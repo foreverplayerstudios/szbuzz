@@ -6,6 +6,7 @@ import { getByGenre, getGenres } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { SEO } from '../components/SEO';
 import { cn } from '../utils/cn';
+import { Advertisement } from '../components/Advertisement';
 
 export const Genre = () => {
   const { id, type = 'movie' } = useParams<{ id: string; type: 'movie' | 'tv' }>();
@@ -77,6 +78,11 @@ export const Genre = () => {
             </button>
           ))}
         </div>
+        
+        {/* Advertisement */}
+        <div className="mb-8">
+          <Advertisement className="mb-8" />
+        </div>
 
         {isLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -97,10 +103,17 @@ export const Genre = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {items.map((item) => (
-              <MovieCard key={item.id} item={item} mediaType={activeType} />
-            ))}
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {items.map((item: any) => (
+                <MovieCard key={item.id} item={item} mediaType={activeType} />
+              ))}
+            </div>
+            
+            {/* Advertisement */}
+            <div className="mt-8">
+              <Advertisement className="mt-8" />
+            </div>
           </div>
         )}
       </main>

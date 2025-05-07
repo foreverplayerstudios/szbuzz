@@ -14,51 +14,7 @@ import { supabase } from '../lib/supabase';
 import { GenreBadge } from '../components/GenreBadge';
 import { createSEOProps, formatMovieTitle } from '../utils/seo-helper';
 
-// Advertisement script loader component
-const AdScript = () => {
-  React.useEffect(() => {
-    // First, set the global atOptions
-    const atOptionsScript = document.createElement('script');
-    atOptionsScript.type = 'text/javascript';
-    atOptionsScript.text = `
-      window.atOptions = {
-        'key' : 'cfb74f91e14c4ae76186223d9338a5da',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    `;
-    document.head.appendChild(atOptionsScript);
-    
-    // Then load the invoke script for each ad container
-    const containers = ['ad-container-watch-1', 'ad-container-watch-2'];
-    containers.forEach((containerId, index) => {
-      const invokeScript = document.createElement('script');
-      invokeScript.type = 'text/javascript';
-      invokeScript.src = '//www.highperformanceformat.com/cfb74f91e14c4ae76186223d9338a5da/invoke.js';
-      invokeScript.async = true;
-      document.body.appendChild(invokeScript);
-    });
-
-    // Cleanup function
-    return () => {
-      try {
-        document.head.removeChild(atOptionsScript);
-        const scripts = document.querySelectorAll('script[src*="highperformanceformat.com"]');
-        scripts.forEach(script => {
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
-          }
-        });
-      } catch (e) {
-        console.error('Error cleaning up ad scripts:', e);
-      }
-    };
-  }, []);
-
-  return null;
-};
+import { Advertisement } from '../components/Advertisement';
 
 export const Watch = () => {
   const { mediaType = 'movie', id } = useParams<{ mediaType: 'movie' | 'tv'; id: string }>();
@@ -176,15 +132,14 @@ export const Watch = () => {
     publishedAt: releaseDate,
     rating: details.vote_average,
     duration: runtime,
-    genres: details.genres?.map(g => g.name),
-    actors: details.credits?.cast?.slice(0, 5).map(actor => actor.name),
-    director: details.credits?.crew?.find(person => person.job === 'Director')?.name
+    genres: details.genres?.map((g: any) => g.name),
+    actors: details.credits?.cast?.slice(0, 5).map((actor: any) => actor.name),
+    director: details.credits?.crew?.find((person: any) => person.job === 'Director')?.name
   });
 
   return (
     <>
       <SEO {...seoProps} />
-      <AdScript />
 
       <main className="min-h-screen bg-[#0f0f0f]">
         <div className="relative">
@@ -253,7 +208,7 @@ export const Watch = () => {
 
                 {details.genres && (
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {details.genres.map((genre) => (
+                    {details.genres.map((genre: any) => (
                       <GenreBadge
                         key={genre.id}
                         id={genre.id}
@@ -282,8 +237,8 @@ export const Watch = () => {
                 </div>
 
                 {/* Advertisement */}
-                <div className="mb-8 flex justify-center">
-                  <div id="ad-container-watch-1" style={{width:'728px', height:'90px'}} />
+                <div className="mb-8">
+                  <Advertisement className="mb-8" />
                 </div>
 
                 {mediaType === 'tv' && details.seasons && (
@@ -303,7 +258,7 @@ export const Watch = () => {
                         </button>
                         {showSeasons && (
                           <div className="absolute top-full right-0 mt-2 w-48 bg-[#1a1a1a] rounded-lg shadow-xl border border-white/[0.05] py-1 z-50">
-                            {details.seasons.map((season) => (
+                            {details.seasons.map((season: any) => (
                               <button
                                 key={season.season_number}
                                 onClick={() => handleEpisodeSelect(season.season_number, 1)}
@@ -325,7 +280,7 @@ export const Watch = () => {
                       </div>
                     </div>
                     <div className="grid gap-4">
-                      {seasonDetails?.episodes.map((episode) => (
+                      {seasonDetails?.episodes.map((episode: any) => (
                         <button
                           key={episode.episode_number}
                           onClick={() => handleEpisodeSelect(selectedSeason, episode.episode_number)}
@@ -378,15 +333,15 @@ export const Watch = () => {
                 </div>
 
                 {/* Advertisement */}
-                <div className="mb-8 flex justify-center">
-                  <div id="ad-container-watch-2" style={{width:'728px', height:'90px'}} />
+                <div className="mb-8">
+                  <Advertisement className="mb-8" />
                 </div>
 
                 {recommendations && recommendations.length > 0 && (
                   <div>
                     <h2 className="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-200 to-white">You May Also Like</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {recommendations.slice(0, 8).map((item) => (
+                      {recommendations.slice(0, 8).map((item: any) => (
                         <MovieCard
                           key={item.id}
                           item={item}

@@ -6,6 +6,7 @@ import { search } from '../services/tmdb';
 import MovieCard from '../components/MovieCard';
 import { SEO } from '../components/SEO';
 import { cn } from '../utils/cn';
+import { Advertisement } from '../components/Advertisement';
 
 type MediaType = 'all' | 'movie' | 'tv';
 
@@ -115,6 +116,11 @@ export const Search = () => {
               ))}
             </div>
           </div>
+          
+          {/* Advertisement */}
+          <div className="mb-8">
+            <Advertisement className="mb-8" />
+          </div>
 
           {error ? (
             <div className="text-center py-12 bg-red-500/10 rounded-xl border border-red-500/20">
@@ -150,6 +156,11 @@ export const Search = () => {
                     mediaType={item.media_type as 'movie' | 'tv'}
                   />
                 ))}
+              </div>
+              
+              {/* Advertisement */}
+              <div className="mt-8 mb-8">
+                <Advertisement className="my-8" />
               </div>
             </>
           ) : null}
